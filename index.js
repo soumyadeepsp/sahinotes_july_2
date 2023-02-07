@@ -2,8 +2,18 @@ const express = require("express");
 const app = express();
 const expressEjsLayouts = require("express-ejs-layouts");
 require('./config/mongoose');
+require('./config/passport-local-strategy');
+const expressSession = require('express-session');
 
+app.use(express.urlencoded());
 app.use(expressEjsLayouts);
+app.use(expressSession({
+    name: 'sahinotes',
+    secret: 'sahinotes_dev',
+    cookie: {
+        maxAge: 24*60*60*1000
+    }
+}));
 app.use("/", require("./routes/index.js"));
 app.set('layout extractStyles', true);
 app.set('layout extractScripts', true);
