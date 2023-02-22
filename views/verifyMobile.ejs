@@ -1,0 +1,12 @@
+<h1>verify your mobile </h1>
+<form>
+    <input id="mobile_number" type="text" name="mobile" placeholder="Enter your mobile" required>
+    <input id="send_otp_button" type="submit" value="Send otp">
+</form>
+
+<form action="/users/validate_otp" method="POST">
+    <input type="text" name="otp" placeholder="Enter the otp sent" required>
+    <input type="submit" value="Submit otp">
+</form>
+
+<script src="/js/verifyMobile.js"></script>
