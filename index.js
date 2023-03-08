@@ -7,7 +7,9 @@ require('./config/passport-local-strategy');
 require('./config/passport-google-oauth20-strategy');
 const expressSession = require('express-session');
 const mongoStore = require('connect-mongo');
+const expressFileUpload = require('express-fileupload');
 
+app.use(expressFileUpload());
 app.use(express.urlencoded());
 app.use(expressEjsLayouts);
 app.use(expressSession({

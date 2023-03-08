@@ -1,5 +1,15 @@
 <link rel="stylesheet" href="/css/profile.css">
 <h1>profile page</h1>
+<form id="upload_form" action="/notes/upload_notes" method="POST" enctype="multipart/form-data">
+    <input id="name" type="text" name="name" placeholder="Name of the notes" required>
+    <input id="about" type="text" name="about" placeholder="Whta is your notes about?" required>
+    <input id="file" type="file" name="note" required>
+    <input id="submit" type="submit" value="Upload">
+</form>
 <a href="/users/logout">Logout</a>
 <a href="/users/verify_mobile">Verify mobile</a>
+<br>
+<% for (var i=0; i<locals.notes_list.length; i++) { %>
+    <a href="/notes/view/<%=locals.notes_list[i]['_id']%>"><%=locals.notes_list[i]['title']%></p>
+<% } %>
 <script src="/js/profile.js"></script>

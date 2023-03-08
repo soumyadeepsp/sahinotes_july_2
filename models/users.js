@@ -8,7 +8,9 @@ const userSchema = new Schema({
     password: {type: String, require: true},
     mobile: {type: String},
     temp_mobile: {type: String, default: "", require: true},
-    mobile_otp: {type: String, default: "", require: true}
+    mobile_otp: {type: String, default: "", require: true},
+    likedNotes: [{type: mongoose.Schema.Types.ObjectId, ref: 'Note'}],
+    viewedNotes: [{type: mongoose.Schema.Types.ObjectId, ref: 'Note'}]
 }, {
     timestamps: true
 });

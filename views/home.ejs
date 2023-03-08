@@ -1,2 +1,6 @@
 <h1>sahinotes</h1>
 <a href="/users/auth/google">Google signin/singup</a>
+<br>
+<% for (var i=0; i<locals.users_list.length; i++) { %>
+    <a href="/users/profile/<%=locals.users_list[i]['id']%>"><%=locals.users_list[i]['email']%></p>
+<% } %>

@@ -1,8 +1,13 @@
 const User = require('../models/users');
 const fast2sms = require('fast-two-sms');
+const Note = require('../models/notes');
 
-module.exports.profile = function (req, res) {
-    return res.render('profile');
+module.exports.profile = async function (req, res) {
+    var id = req.params.id;
+    var notes = await Note.find({author: id});
+    return res.render('profile', {
+        notes_list: notes
+    });
 }
 
 module.exports.signin = function(req, res) {
@@ -18,7 +23,6 @@ module.exports.create = (req, res) =>{
     var email = req.body.email;
     var password = req.body.password;
     var confirm_password = req.body.confirm_password;
-    console.log(name, email, password, confirm_password);
     if (password==confirm_password) {
         // create new entry in the database
         User.create({
@@ -29,7 +33,6 @@ module.exports.create = (req, res) =>{
             if (err) {
                 console.log('Error in creating new user: ', err); return;
             }
-            console.log(user);
         });
         return res.render('signin');
     } else {
@@ -39,6 +42,7 @@ module.exports.create = (req, res) =>{
 }
 
 module.exports.createSession = (req, res) => {
+    const id = req.user.id;
     // var email = req.body.email;
     // var password = req.body.password;
     // User.findOne({email: email}, (err, user) => {
@@ -50,7 +54,7 @@ module.exports.createSession = (req, res) => {
     //         return res.redirect("back");
     //     }
     // })
-    return res.redirect('profile');
+    return res.redirect(`/users/profile/${id}`);
 }
 
 module.exports.logout = function(req, res) {
@@ -91,7 +95,6 @@ module.exports.sendOtp = async function(req, res) {
 }
 
 module.exports.validateOtp = function(req, res) {
-    console.log("inside validate otp controller");
     const user_id = req.user.id;
     const otp = req.body.otp;
     User.findById(user_id, async function(err, user) {

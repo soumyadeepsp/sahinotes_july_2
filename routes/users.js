@@ -4,7 +4,7 @@ var usersController = require("../controllers/users_controller");
 console.log(usersController);
 const passport = require("passport");
 
-router.get("/profile", passport.checkAuthentication, usersController.profile);
+router.get("/profile/:id", passport.checkAuthentication, usersController.profile);
 router.get("/signin", usersController.signin);
 router.get("/signup", usersController.signup);
 router.post("/create", usersController.create);
@@ -15,9 +15,9 @@ router.get('/sendotp/:mobile_number', usersController.sendOtp);
 router.post('/validate_otp', usersController.validateOtp);
 
 //this is used to send request to google
-router.get('/auth/google', passport.authenticate('google', { scope: ['profile'] }));
+router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 //this is used to get response from google
-router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), usersController.createSession);
+router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/users/signin' }), usersController.createSession);
 
 module.exports = router;
