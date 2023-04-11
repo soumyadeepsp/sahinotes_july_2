@@ -1,6 +1,7 @@
 const User = require('../models/users');
 const fast2sms = require('fast-two-sms');
 const Note = require('../models/notes');
+var Session = require('../models/session');
 
 module.exports.profile = async function (req, res) {
     var id = req.params.id;
@@ -18,7 +19,45 @@ module.exports.signup = function(req, res) {
     return res.render('signup');
 }
 
+module.exports.reactsignin = async function(req, res) {
+    console.log(req.body);
+    var email = req.body.email;
+    var password = req.body.password;
+    try {
+        var user = await User.findOne({email: email});
+        if (user==undefined) {
+            // no user exists with this email id
+            return res.status(404).send({'success': false, "message": "Email does not exist"});
+        } else {
+            // user exists with this email id
+            var session = await Session.findOne({user: user.id});
+            if (session==undefined) {
+                // either user has logged out or is logging in for the first time
+                var currentTime = new Date();
+                currentTime.setHours(currentTime.getHours()+24);
+                var expiryDate = currentTime;
+                var session = await Session.create({
+                    user: user.id,
+                    expiry: expiryDate
+                });
+            } else {
+                // user is not logging in for the very first time
+                var currentTime = new Date();
+                currentTime.setHours(currentTime.getHours()+24);
+                var newExpiryDate = currentTime;
+                var session = await Session.findOneAndUpdate({user: user.id}, {expiry: expiryDate});
+                await session.save();
+            }
+        }
+        return res.status(200).send({'success': true, message: "Signin successful", "user": user.id});
+    } catch(err) {
+        console.log(err);
+        return res.status(500).send({'success': false, "message": "Server error"});
+    }
+}
+
 module.exports.create = (req, res) =>{
+    console.log(req.body);
     var name = req.body.name;
     var email = req.body.email;
     var password = req.body.password;
@@ -34,10 +73,10 @@ module.exports.create = (req, res) =>{
                 console.log('Error in creating new user: ', err); return;
             }
         });
-        return res.render('signin');
+        return res.status(200).send({'success': true});
     } else {
         console.log("password and confirm password are not same");
-        return res.redirect('back');
+        return res.status(404).send({'success': false, "message": "Passwords don't match"});
     }
 }
 
@@ -57,16 +96,19 @@ module.exports.createSession = (req, res) => {
     return res.redirect(`/users/profile/${id}`);
 }
 
-module.exports.logout = function(req, res) {
-    req.logout(function(err) {
-        return res.redirect('/users/signin');
-    });
+module.exports.logout = async function(req, res) {
+    var id = req.body.id;
+    try {
+        await Session.findOneAndDelete({user: id});
+        return res.status(200).send({'success': true, "message": "Logout successful"});
+    } catch(err) {
+        return res.status(404).send({'success': false, "message": "Logout failed"});
+    }
 }
 
 var temp_user;
 
 module.exports.sendOtp = async function(req, res) {
-    const user_id = req.user.id;
     const mobile_number = req.params.mobile_number;
     var otp = (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
     var options = {

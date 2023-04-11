@@ -8,6 +8,7 @@ require('./config/passport-google-oauth20-strategy');
 const expressSession = require('express-session');
 const mongoStore = require('connect-mongo');
 const expressFileUpload = require('express-fileupload');
+const cors = require('cors');
 
 app.use(expressFileUpload());
 app.use(express.urlencoded());
@@ -21,6 +22,9 @@ app.use(expressSession({
     store: mongoStore.create({
         mongoUrl: "mongodb://localhost/sahinotes2_development"
     })
+}));
+app.use(cors({
+    origin: '*'
 }));
 app.use(passport.initialize());
 app.use(passport.session());

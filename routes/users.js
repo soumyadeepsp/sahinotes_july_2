@@ -13,6 +13,7 @@ router.get('/logout', usersController.logout);
 router.get('/verify_mobile', usersController.verifyMobile);
 router.get('/sendotp/:mobile_number', usersController.sendOtp);
 router.post('/validate_otp', usersController.validateOtp);
+router.post('/reactsignin', usersController.reactsignin);
 
 //this is used to send request to google
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
